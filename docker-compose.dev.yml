@@ -1,0 +1,59 @@
+version: "3"
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3001:3001
+    networks:
+      - mern-network
+    volumes:
+      - ./server/src:/app/src
+    depends_on:
+      - mongo
+  client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    networks:
+      - mern-network
+    volumes:
+      - ./client/src:/usr/app/src
+      - ./client/public:/usr/app/public
+      - /usr/app/node_modules
+    depends_on:
+      - server
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    hostname: mongo
+    restart: always
+    networks:
+      - mern-network
+    ports:
+        - 27017:27017
+    volumes:
+        - mongodbdata:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - mern-network
+    environment:
+      ME_CONFIG_MONGODB_URL: "mongodb://mongo:27017/"
+    depends_on:
+      - mongo
+volumes:
+  mongodbdata:
+      driver: local
+networks:
+  mern-network:
+    driver: bridge

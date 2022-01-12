@@ -1,0 +1,41 @@
+version: "3"
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    ports:
+      - 3001:3001
+    networks:
+      - mern-network
+    restart: unless-stopped
+    depends_on:
+      - mongo
+  client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    networks:
+      - mern-network
+    depends_on:
+      - server
+    restart: unless-stopped
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    hostname: mongo
+    restart: always
+    networks:
+      - mern-network
+    ports:
+        - 27017:27017
+    volumes:
+        - mongodbdata:/data/db
+volumes:
+  mongodbdata:
+      driver: local
+networks:
+  mern-network:
+    driver: bridge
