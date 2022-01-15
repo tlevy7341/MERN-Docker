@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - 3001:3001
-    networks:
-      - mern-network
     restart: unless-stopped
     depends_on:
       - mongo
@@ -17,8 +15,6 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "80:80"
-    networks:
-      - mern-network
     depends_on:
       - server
     restart: unless-stopped
@@ -27,8 +23,6 @@ services:
     image: mongo:latest
     hostname: mongo
     restart: always
-    networks:
-      - mern-network
     ports:
         - 27017:27017
     volumes:
@@ -36,6 +30,3 @@ services:
 volumes:
   mongodbdata:
       driver: local
-networks:
-  mern-network:
-    driver: bridge
