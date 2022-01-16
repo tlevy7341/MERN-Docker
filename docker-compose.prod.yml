@@ -9,6 +9,10 @@ services:
     restart: unless-stopped
     depends_on:
       - mongo
+    networks:
+      - backend
+    environment:
+      - mongo_url=${mongo_url}
   client:
     build: 
       context: ./client
@@ -18,15 +22,31 @@ services:
     depends_on:
       - server
     restart: unless-stopped
+    networks:
+      - frontend
+      - backend
   mongo:
-    container_name: mongo
     image: mongo:latest
-    hostname: mongo
-    restart: always
+    restart: unless-stopped
     ports:
         - 27017:27017
     volumes:
         - mongodbdata:/data/db
+    networks:
+      - db
+      - backend
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${db_user}
+      - MONGO_INITDB_ROOT_PASSWORD=${db_password}
+      - MONGO_INITDB_DATABASE=${db_name}
 volumes:
   mongodbdata:
       driver: local
+networks:
+    frontend:
+        driver: bridge
+    backend:
+        driver: bridge
+    db:
+        driver: bridge
+        internal: true

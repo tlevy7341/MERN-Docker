@@ -15,14 +15,12 @@ router.use(routes);
 
 
 //Connect to DB
-const uri: string = 'mongodb://mongo:27017/webapp'
+const URI = process.env.mongo_url;
 const options = { useNewUrlParser: true, useUnifiedTopology: true }
 
- mongoose
-  .connect(uri, options)
-  .then(() => console.log("Database connected..."))
-
-
+mongoose
+  .connect(URI, options)
+  .then(() => console.log("Database connected...")) 
 
 const httpServer = http.createServer(router);
 const PORT: string = '3001';
